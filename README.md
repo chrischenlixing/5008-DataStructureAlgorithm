@@ -1,1 +1,1 @@
-# cs5008-sp2023-Lee
+# Lixing Chen - chen.lixin@northeastern.edu
