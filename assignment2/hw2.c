@@ -8,7 +8,7 @@
 
 bool isEmpty (int* s, int t) {
   // returns true if t = -1
-
+ return t == -1 ? true : false;
   // INSERT YOUR CODE HERE
 }
 
@@ -16,12 +16,19 @@ bool isFull (int* s, int t) {
   // returns true if no more room in the stack
 
   // INSERT YOUR CODE HERE
+   return t == MAXSIZE ? true : false;
 }
 
 void push(int v, int* s, int* tp) {
   // put v onto the top of the stack s unless it is already full
 
   // INSERT YOUR CODE HERE
+   if (!isFull(s,*tp)){
+        *tp += 1;
+        s[*tp] = v;
+    }else{
+        printf("stack is full.");
+    }
 }
 
 int pop (int* s, int* tp) {
@@ -29,6 +36,14 @@ int pop (int* s, int* tp) {
   // update s and *tp -- requires top to be passed by reference!
 
   // INSERT YOUR CODE HERE
+   if (!isEmpty(s, *tp)){
+        int temp = s[*tp];
+        *tp -= 1;
+        return temp;
+    }else{
+        printf("stack is empty.");
+        return -1;
+    }
 }
 
 int main () {
