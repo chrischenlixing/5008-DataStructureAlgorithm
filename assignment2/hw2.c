@@ -16,7 +16,7 @@ bool isFull (int* s, int t) {
   // returns true if no more room in the stack
 
   // INSERT YOUR CODE HERE
-   return t == MAXSIZE ? true : false;
+   return t == MAXSIZE-1? true : false;
 }
 
 void push(int v, int* s, int* tp) {
