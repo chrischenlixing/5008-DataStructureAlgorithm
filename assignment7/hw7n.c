@@ -1,127 +1,102 @@
-// name: <your name here>
-// email: <your email here>
+// name: Lixing Chen
+// email: chen.lixin@northeastern.edu
 
-// Hash table with doubly linked list for chaning/
 #include <stdio.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 
-struct bucket* hashTable = NULL; 
-int BUCKET_SIZE = 10; 
+#define BUCKET_SIZE 10
 
-// node struct
 struct node {
     int key;
     int value;
     struct node* next;
     struct node* previous;
-
 };
 
-// bucket struct
-struct bucket{
+struct bucket {
     struct node* head;
     int count;
-    // Add your code here
-
 };
 
-// create a new node
-struct node* createNode(int key, int value){
+struct bucket* hashTable;
 
-    // Add your code here    struct node* newNode;
-    struct node *newNode = (struct node *) malloc(sizeof(struct node));
-    newNode -> key = key;
-    newNode -> value = value;
-    newNode -> next = NULL;
+struct node* createNode(int key, int value) {
+    struct node* newNode = (struct node*) malloc(sizeof(struct node));
+    newNode->key = key;
+    newNode->value = value;
+    newNode->next = NULL;
     newNode -> previous = NULL;
-
     return newNode;
 }
 
-//  hash function with %
 int hashFunction(int key){
     return key % BUCKET_SIZE;
 }
 
-//  insert a new key
-void add(int key, int value){
-    int hashIndex = hashFunction(key);
-    
-    // Add your code here
+void add(int key, int value) {
+      int hashIndex = hashFunction(key);
     struct node* newNode = createNode(key, value);
-    if (hashTable[hashIndex].count == 0){
-        hashTable[hashIndex].head = newNode;
-        hashTable[hashIndex].count += 1;
-    } else{
-        hashTable[hashIndex].head -> previous = newNode;
-        newNode -> next = hashTable[hashIndex].head;
-        hashTable[hashIndex].head = newNode;
-        hashTable[hashIndex].count += 1;
 
+    if (hashTable[hashIndex].count == 0) {
+        hashTable[hashIndex].head = newNode;
+        hashTable[hashIndex].count = 1;
+    } else {
+            hashTable[hashIndex].head->previous = newNode;
+        newNode->next = hashTable[hashIndex].head;
+        hashTable[hashIndex].head = newNode;
+        hashTable[hashIndex].count++;
     }
-
 }
 
-// remove a key
-void remove_key(int key){
+void remove_key(int key) {
     int hashIndex = hashFunction(key);
+    struct node* currentNode = hashTable[hashIndex].head;
+    struct node* previousNode = NULL;
 
-    // Add your code here
-    struct node * node = hashTable[hashIndex].head;
-    if (node == NULL){
-        printf("\nno key found. \n");
+    if (currentNode == NULL) {
+        printf("\nKey not found\n");
         return;
     }
-    while (node != NULL) {
-        if (node->key == key) {
-            if (node -> previous == NULL && node->next == NULL) {
-                hashTable[hashIndex].head = NULL;
-            }
-            else if (node -> previous == NULL){
-                node->next->previous = NULL;
-                hashTable[hashIndex].head = node->next;
-            }
-            else if (node -> next == NULL){
-                node->previous->next = NULL;
-            }
-            else{
-                node->previous->next = node->next;
-                node->next->previous = node->previous;
-            }
-            hashTable[hashIndex].count--;
-            free(node);
-            printf("\n[ %d ] is removed. \n", key);
-            return;
-        }
-        node = node -> next;
-    }
-    printf("\n[ %d ] is not found.\n", key);
-    return;
 
+    while (currentNode != NULL && currentNode->key != key) {
+        previousNode = currentNode;
+        currentNode = currentNode->next;
+    }
+
+    if (currentNode == NULL) {
+        printf("\nKey not found\n");
+        return;
+    }
+
+    if (previousNode == NULL) {
+        hashTable[hashIndex].head = currentNode->next;
+    } else {
+        previousNode->next = currentNode->next;
+    }
+
+    free(currentNode);
+    hashTable[hashIndex].count--;
+    printf("\nKey (%d) is removed\n", key);
 }
 
-// search a value using a key
-void search(int key){
-    int hashIndex = hashFunction(key);
-    struct node* node = hashTable[hashIndex].head;
+void search(int key) {
+    int hashIndex = key % BUCKET_SIZE;
+    struct node* currentNode = hashTable[hashIndex].head;
 
-    // Add your code here
-
-    if(node == NULL){
-        printf("\nno key found. \n");
+    if (currentNode == NULL) {
+        printf("\nKey not found\n");
         return;
     }
-    while (node != NULL)
-    {
-        if (node->key == key){
-            printf("\nkey = [ %d ], value = [ %d ].\n", node->key, node->value);
-            return;
-        }
-        node = node->next;
-    }
-    printf("\nno key found. \n");
-    return;
 
+    while (currentNode != NULL && currentNode->key != key) {
+        currentNode = currentNode->next;
+    }
+
+    if (currentNode == NULL) {
+        printf("\nKey is not found\n");
+    } else {
+        printf("\nKey: %d, Value: %d\n", currentNode->key, currentNode->value);
+    }
 }
 
 void display(){
@@ -141,9 +116,15 @@ void display(){
     printf("\n========= display complete ========= \n");
 }
 
-int main(){
-    hashTable = (struct bucket *)malloc(BUCKET_SIZE * sizeof(struct bucket));
-    
+int main() {
+    int i;
+    hashTable = (struct bucket*) malloc(BUCKET_SIZE * sizeof(struct bucket));
+
+    for (i = 0; i < BUCKET_SIZE; i++) {
+        hashTable[i].head = NULL;
+        hashTable[i].count = 0;
+    }
+
     add(0, 1);
     add(1, 10);
     add(11, 12);
@@ -158,7 +139,7 @@ int main(){
     remove_key(11);
 
     display();
-
+  
     search(11);
     search(1);
-}
+  }
